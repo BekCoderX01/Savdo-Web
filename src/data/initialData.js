@@ -13,7 +13,7 @@ export const INITIAL_PRODUCTS = [
     stock: 5,
     liked: false,
     icon: "laptop",
-    image: "/products/macbook-air-m2.jpg",
+    image: "./products/macbook-air-m2.jpg",
     reviews: [
       {
         id: "r1",
@@ -46,7 +46,7 @@ export const INITIAL_PRODUCTS = [
     stock: 2,
     liked: false,
     icon: "headphones",
-    image: "/products/sony-wh-1000xm5.jpg",
+    image: "./products/sony-wh-1000xm5.jpg",
     reviews: [
       {
         id: "r3",
@@ -72,7 +72,7 @@ export const INITIAL_PRODUCTS = [
     stock: 8,
     liked: false,
     icon: "keyboard",
-    image: "/products/keychron-k2-pro.jpg",
+    image: "./products/keychron-k2-pro.jpg",
     reviews: [
       {
         id: "r4",
@@ -98,7 +98,7 @@ export const INITIAL_PRODUCTS = [
     stock: 4,
     liked: false,
     icon: "watch",
-    image: "/products/apple-watch-series-9.jpg",
+    image: "./products/apple-watch-series-9.jpg",
     reviews: [
       {
         id: "r5",
@@ -124,7 +124,7 @@ export const INITIAL_PRODUCTS = [
     stock: 0,
     liked: false,
     icon: "laptop",
-    image: "/products/asus-zenbook-14-oled.jpg",
+    image: "./products/asus-zenbook-14-oled.jpg",
     reviews: [
       {
         id: "r6",
@@ -149,7 +149,7 @@ export const INITIAL_PRODUCTS = [
     stock: 6,
     liked: false,
     icon: "mouse",
-    image: "/products/logitech-mx-master-3s.jpg",
+    image: "./products/logitech-mx-master-3s.jpg",
     reviews: [
       {
         id: "r7",
@@ -175,7 +175,7 @@ export const INITIAL_PRODUCTS = [
     stock: 6,
     liked: false,
     icon: "watch",
-    image: "/products/iphone-15-pro-max.jpg",
+    image: "./products/iphone-15-pro-max.jpg",
     reviews: [
       {
         id: "r8",
@@ -201,7 +201,7 @@ export const INITIAL_PRODUCTS = [
     stock: 4,
     liked: false,
     icon: "watch",
-    image: "/products/samsung-galaxy-s24-ultra.jpg",
+    image: "./products/samsung-galaxy-s24-ultra.jpg",
     reviews: [
       {
         id: "r9",
@@ -227,7 +227,7 @@ export const INITIAL_PRODUCTS = [
     stock: 7,
     liked: false,
     icon: "headphones",
-    image: "/products/airpods-pro-2.jpg",
+    image: "./products/airpods-pro-2.jpg",
     reviews: [
       {
         id: "r10",

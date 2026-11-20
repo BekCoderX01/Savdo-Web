@@ -16,7 +16,7 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 
-const STORAGE_VERSION = "texnobozor_v2_clean";
+const STORAGE_VERSION = "texnobozor_v3_clean";
 
 function ensureCleanStorageVersion() {
   try {
@@ -50,7 +50,7 @@ function mergeWithInitialProducts(saved) {
     return {
       ...initial,
       ...item,
-      image: item.image || initial.image,
+      image: initial.image,
       description: item.description || initial.description,
       warranty: item.warranty || initial.warranty,
       reviews:
