@@ -31,13 +31,13 @@ function Header({
       <div className="container header-inner">
         <div
           className="brand"
-          onClick={() => onNavigate?.("home")}
+          onClick={() => onNavigate?.("home", true)}
           style={{ cursor: "pointer" }}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
-              onNavigate?.("home");
+              onNavigate?.("home", true);
             }
           }}
         >

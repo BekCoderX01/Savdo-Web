@@ -7,6 +7,7 @@ function ProductGrid({
   onToggleLike,
   onAddToCart,
   onResetFilters,
+  onSelectProduct,
 }) {
   if (products.length === 0) {
     return <EmptyState onReset={onResetFilters} />;
@@ -27,6 +28,7 @@ function ProductGrid({
             cartQuantity={cartQuantity}
             onToggleLike={onToggleLike}
             onAddToCart={onAddToCart}
+            onSelectProduct={onSelectProduct}
           />
         );
       })}

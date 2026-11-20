@@ -11,7 +11,13 @@ function FilterBar({
   onClearSearch,
   resultsCount = 0,
 }) {
-  const categories = ["Hammasi", "Noutbuklar", "Audio", "Aksessuarlar"];
+  const categories = [
+    "Hammasi",
+    "Smartfonlar",
+    "Noutbuklar",
+    "Audio",
+    "Aksessuarlar",
+  ];
 
   return (
     <section className="filter-bar" aria-label="Mahsulotlarni saralash">

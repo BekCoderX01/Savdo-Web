@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Header from "./components/Header";
+import ProductModal from "./components/ProductModal";
 import ProfileModal from "./components/ProfileModal";
 import ToastContainer from "./components/ToastContainer";
 import {
@@ -15,8 +16,23 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 
+const STORAGE_VERSION = "texnobozor_v2_clean";
+
+function ensureCleanStorageVersion() {
+  try {
+    if (localStorage.getItem("texnobozor_version") !== STORAGE_VERSION) {
+      localStorage.removeItem("texnobozor_products");
+      localStorage.removeItem("texnobozor_cart");
+      localStorage.setItem("texnobozor_version", STORAGE_VERSION);
+    }
+  } catch {
+    // ignore storage errors
+  }
+}
+
 function loadFromStorage(key, fallback) {
   try {
+    ensureCleanStorageVersion();
     const raw = localStorage.getItem(key);
     if (!raw) return fallback;
     return JSON.parse(raw);
@@ -25,9 +41,38 @@ function loadFromStorage(key, fallback) {
   }
 }
 
+function mergeWithInitialProducts(saved) {
+  if (!Array.isArray(saved)) return INITIAL_PRODUCTS;
+
+  const merged = saved.map((item) => {
+    const initial = INITIAL_PRODUCTS.find((p) => p.id === item.id);
+    if (!initial) return item;
+    return {
+      ...initial,
+      ...item,
+      image: item.image || initial.image,
+      description: item.description || initial.description,
+      warranty: item.warranty || initial.warranty,
+      reviews:
+        Array.isArray(item.reviews) && item.reviews.length > 0
+          ? item.reviews
+          : initial.reviews,
+    };
+  });
+
+  const existingIds = new Set(merged.map((p) => p.id));
+  const missingInitials = INITIAL_PRODUCTS.filter(
+    (p) => !existingIds.has(p.id)
+  );
+
+  return [...merged, ...missingInitials];
+}
+
 function App() {
   const [products, setProducts] = useState(() =>
-    loadFromStorage("texnobozor_products", INITIAL_PRODUCTS)
+    mergeWithInitialProducts(
+      loadFromStorage("texnobozor_products", INITIAL_PRODUCTS)
+    )
   );
   const [cart, setCart] = useState(() =>
     loadFromStorage("texnobozor_cart", INITIAL_CART)
@@ -51,6 +96,7 @@ function App() {
   const [onlyLiked, setOnlyLiked] = useState(false);
   const [sortBy, setSortBy] = useState("default");
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState(null);
   const [toasts, setToasts] = useState([]);
 
   const addToast = useCallback((message, type = "success") => {
@@ -101,6 +147,17 @@ function App() {
     () => products.filter((product) => product.liked).length,
     [products]
   );
+
+  const selectedProduct = useMemo(
+    () => products.find((p) => p.id === selectedProductId) || null,
+    [products, selectedProductId]
+  );
+
+  const selectedProductCartQty = useMemo(() => {
+    if (!selectedProductId) return 0;
+    const found = cart.find((c) => c.productId === selectedProductId);
+    return found ? found.quantity : 0;
+  }, [cart, selectedProductId]);
 
   const filteredProducts = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -159,6 +216,7 @@ function App() {
           quantity: entry.quantity,
           stock: product.stock,
           icon: product.icon,
+          image: product.image,
         };
       })
       .filter(Boolean);
@@ -247,6 +305,34 @@ function App() {
     addToast(`«${targetProduct.title}» savatga qo‘shildi`, "success");
   }
 
+  function handleAddReview(productId, { author, rating, comment }) {
+    const newReview = {
+      id: `rev-${Date.now()}`,
+      author,
+      rating,
+      date: "Bugun",
+      comment,
+    };
+
+    setProducts((prev) =>
+      prev.map((product) => {
+        if (product.id !== productId) return product;
+        const nextReviews = [newReview, ...(product.reviews || [])];
+        const avg =
+          nextReviews.reduce((acc, r) => acc + Number(r.rating || 5), 0) /
+          nextReviews.length;
+
+        return {
+          ...product,
+          reviews: nextReviews,
+          rating: avg.toFixed(1),
+        };
+      })
+    );
+
+    addToast("Sharhingiz muvaffaqiyatli qo‘shildi!", "success");
+  }
+
   function handleIncreaseCartQty(productId) {
     const targetProduct = products.find((p) => p.id === productId);
     if (!targetProduct) return;
@@ -290,6 +376,15 @@ function App() {
   function handleClearCart() {
     setCart([]);
     addToast("Savat tozalandi", "info");
+  }
+
+  function handleNavigate(page, resetIfHome = false) {
+    setActivePage(page);
+    if (page === "home" && resetIfHome) {
+      setOnlyLiked(false);
+      setSelectedCategory("Hammasi");
+      setSearchQuery("");
+    }
   }
 
   function handleResetFilters() {
@@ -534,7 +629,7 @@ function App() {
         onToggleLikes={handleToggleHeaderLikes}
         cartCount={cartCount}
         activePage={activePage}
-        onNavigate={setActivePage}
+        onNavigate={handleNavigate}
         currentUser={currentUser}
         ordersCount={orders.length}
         onOpenProfile={() => setIsProfileModalOpen(true)}
@@ -549,6 +644,7 @@ function App() {
         {activePage === "home" && (
           <HomePage
             products={filteredProducts}
+            totalProducts={products.length}
             cartItems={cart}
             orders={orders}
             selectedCategory={selectedCategory}
@@ -564,6 +660,8 @@ function App() {
             onResetFilters={handleResetFilters}
             onCancelOrder={handleCancelOrder}
             onDeleteOrder={handleDeleteOrder}
+            onSelectProduct={setSelectedProductId}
+            onNotify={addToast}
           />
         )}
 
@@ -606,6 +704,19 @@ function App() {
           </section>
         )}
       </main>
+
+      {selectedProduct && (
+        <ProductModal
+          key={selectedProduct.id}
+          product={selectedProduct}
+          cartQuantity={selectedProductCartQty}
+          currentUser={currentUser}
+          onClose={() => setSelectedProductId(null)}
+          onToggleLike={handleToggleLike}
+          onAddToCart={handleAddToCart}
+          onAddReview={handleAddReview}
+        />
+      )}
 
       {isProfileModalOpen && currentUser && (
         <ProfileModal

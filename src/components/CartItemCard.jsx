@@ -6,7 +6,16 @@ function CartItemCard({ item, onIncrease, onDecrease, onRemove }) {
   return (
     <li className="cart-page-item">
       <div className="cart-item-thumb">
-        <DeviceIcon type={item.icon} />
+        {item.image ? (
+          <img
+            src={item.image}
+            alt={item.name}
+            className="cart-item-image"
+            loading="lazy"
+          />
+        ) : (
+          <DeviceIcon type={item.icon} />
+        )}
       </div>
 
       <div className="cart-page-item-info">

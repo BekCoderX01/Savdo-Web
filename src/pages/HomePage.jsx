@@ -1,9 +1,11 @@
 import FilterBar from "../components/FilterBar";
+import HeroBanner from "../components/HeroBanner";
 import OrdersSection from "../components/OrdersSection";
 import ProductGrid from "../components/ProductGrid";
 
 function HomePage({
   products = [],
+  totalProducts = 9,
   cartItems = [],
   orders = [],
   selectedCategory = "Hammasi",
@@ -19,9 +21,16 @@ function HomePage({
   onResetFilters,
   onCancelOrder,
   onDeleteOrder,
+  onSelectProduct,
+  onNotify,
 }) {
   return (
     <>
+      <HeroBanner
+        onSelectCategory={onCategoryChange}
+        onNotify={onNotify}
+        totalProducts={totalProducts}
+      />
       <FilterBar
         selectedCategory={selectedCategory}
         onCategoryChange={onCategoryChange}
@@ -39,6 +48,7 @@ function HomePage({
         onToggleLike={onToggleLike}
         onAddToCart={onAddToCart}
         onResetFilters={onResetFilters}
+        onSelectProduct={onSelectProduct}
       />
       <OrdersSection
         orders={orders}
